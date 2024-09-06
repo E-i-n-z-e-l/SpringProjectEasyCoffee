@@ -1,6 +1,7 @@
 package com.example.SpringProject_01.controller;
 
 import com.example.SpringProject_01.Coffee;
+import com.example.SpringProject_01.repository.CoffeeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +14,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/coffees")
 public class RestApiDemoController {
-    private List<Coffee> coffees = new ArrayList<Coffee>();
+    private final CoffeeRepository coffeeRepository;
 
-    public RestApiDemoController() {
-        coffees.addAll(List.of(
-                new Coffee("Café Cereza"),
-                new Coffee("Café Ganador"),
-                new Coffee("Café Lareño"),
-                new Coffee("Café Três Pontas")));
+    public RestApiDemoController(CoffeeRepository coffeeRepository) {
+        this.coffeeRepository = coffeeRepository;
     }
+
 
     /** Iterable — это интерфейс в Java, который представляет собой коллекцию элементов,
     по которой можно итерироваться (перебирать элементы).
@@ -31,14 +29,10 @@ public class RestApiDemoController {
     Данный метод показывает весь список кофе.*/
     @GetMapping
     Iterable<Coffee> getCoffees() {
-        return coffees;
+        return coffeeRepository.findAll();
     }
 
-    /**
-     * Метод ищет кофе с заданным идентификатором и возвращает его, если он найден.
-     * @param id
-     * @return
-     */
+    /* _______________________________________МЕТОД ПЕРЕПИСАН НИЖЕ__________________________________________
     @GetMapping("/{id}") // GET запросы используются для получения ресурсов на сервере.
     Optional<Coffee> getCoffeeById(@PathVariable String id) { // Аннотация @PathVariable используется для извлечения
                                                               // значения переменной из URL и передачи его в метод.
@@ -58,8 +52,23 @@ public class RestApiDemoController {
         /* Optional используется для представления возможного отсутствия значения. В данном случае это означает,
         что метод может вернуть либо объект Coffee, либо ничего (отсутствие объекта). Это позволяет избежать
         возврата null и явно обозначить, что результат может быть пустым. Это также позволяет клиенту,
-        использующему API, легче обрабатывать случаи, когда объект не найден. */
+        использующему API, легче обрабатывать случаи, когда объект не найден.
+    }*/
+
+    /**
+     * Метод ищет кофе с заданным идентификатором и возвращает его, если он найден.
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}") // GET запросы используются для получения ресурсов на сервере.
+    Optional<Coffee> getCoffeeById(@PathVariable String id) { // Optional — это контейнер, который может содержать
+                                                              // значение или быть пустым. В данном случае Optional.of(c) означает,
+                                                              // что значение (объект Coffee) присутствует и будет возвращено.
+        return coffeeRepository.findById(id);
+        /* findById(id) это стандартный метод, предоставляемый CrudRepository (или JpaRepository),
+        который ищет сущность по её идентификатору. */
     }
+
 
     /**
      * Метод создает новый экземпляр кофе.
@@ -69,8 +78,7 @@ public class RestApiDemoController {
     @PostMapping // POST запросы обычно используются для создания новых ресурсов на сервере.
     Coffee postCoffee(@RequestBody Coffee coffee) { // Аннотация @RequestBody используется для извлечения тела запроса
                                                     // и преобразования его в объект, который передается в метод.
-        coffees.add(coffee);
-        return coffee;
+        return coffeeRepository.save(coffee);
     }
 
     /**
@@ -83,21 +91,14 @@ public class RestApiDemoController {
      * @param coffee
      * @return
      */
-    @PutMapping("/{id}") // PUT запросы обычно используются для изменения ресурсов на сервере.
-    Coffee putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
-        int coffeeIndex = -1; // Переменная coffeeIndex используется для хранения индекса объекта кофе в коллекции
-                              // coffees. Изначально она устанавливается в -1, что указывает на то, что кофе не найдено.
-        for (Coffee c: coffees) {
-            if (c.getId().equals(id)) {
-                coffeeIndex = coffees.indexOf(c); // находим индекс объекта c в коллекции coffees;
-                coffees.set(coffeeIndex, coffee); // обновляем объект в коллекции на новый объект кофе, который передан в теле запроса
-            }
-        }
-        return (coffeeIndex == -1) ? // Используем тернарный оператор вместо IF-ELSE;
-                // Если экземпляр кофе не найден, то создаем его;
-                new ResponseEntity<>(postCoffee(coffee), HttpStatus.CREATED).getBody() :
-                // Если экземпляр найден, то изменяем его;
-                new ResponseEntity<>(coffee, HttpStatus.OK).getBody();
+    @PutMapping("/{id}")
+    ResponseEntity<Coffee> putCoffee(@PathVariable String id,
+                                     @RequestBody Coffee coffee) {
+        return (coffeeRepository.existsById(id)) // Проверяем есть ли такой вид кофе;
+                // Если да, то обновляем данные об этом кофе;
+                ? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK)
+                // Если нет, то создаем этот вид кофе;
+                : new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED);
     }
 
     /**
@@ -106,8 +107,8 @@ public class RestApiDemoController {
      * </p>
      * @param id
      */
-    @DeleteMapping("/{id}") // DELETE запросы обычно используются для удаления ресурсов с сервера.
+    @DeleteMapping("/{id}")
     void deleteCoffee(@PathVariable String id) {
-        coffees.removeIf(c -> c.getId().equals(id));
+        coffeeRepository.deleteById(id);
     }
 }

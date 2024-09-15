@@ -21,7 +21,7 @@ public class encyclopediaHomeControllerTest {
     public void testHomePage() throws Exception {
         mockMvc.perform(get("/")) // Выполнить запрос GET /;
                 .andExpect(status().isOk()) // Ожидается код ответа HTTP 200;
-                .andExpect(view().name("enciklopediyaHome")) // Ожидается имя представления home;
+                .andExpect(view().name("enciklopediyaHome")) // Ожидается имя представления enciklopediyaHome;
                 .andExpect(content().contentType("text/html;charset=UTF-8")) // Явное указание кодировки;
                 .andExpect(content().string(containsString("\"Энциклопедия Ангарска от А до Я\"")));
     }

@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class encyclopediaHomeController {
     @GetMapping("/") // Обработка GET запросов;
     public String home() {
-        return "enciklopediyaHome"; // Возвращает строку "home";
+        return "enciklopediyaHome"; // Возвращает строку "enciklopediyaHome";
     }
 }

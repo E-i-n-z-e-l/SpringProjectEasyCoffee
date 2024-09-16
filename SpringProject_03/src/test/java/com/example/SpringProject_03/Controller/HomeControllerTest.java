@@ -1,4 +1,4 @@
-package com.example.SpringProject_03;
+package com.example.SpringProject_03.Controller;
 
 import com.example.SpringProject_03.Controller.HomeController;
 import org.junit.jupiter.api.Test;

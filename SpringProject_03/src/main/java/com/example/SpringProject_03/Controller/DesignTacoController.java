@@ -8,8 +8,10 @@ import com.example.SpringProject_03.Repository.Ingredient.Type;
 import com.example.SpringProject_03.Repository.Taco;
 import com.example.SpringProject_03.Repository.TacoOrder;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,9 +54,37 @@ public class DesignTacoController {
     public Taco taco() {
         return new Taco();
     }
+
+    /**
+     * Обработка HTTP-запросов GET с путем "/design".
+     * @return
+     */
     @GetMapping // Обрабатывает GET запросы;
     public String showDesignForm() {
         return "design";
+    }
+
+    /**
+     * Обработка запросов POST с путем /design.
+     * Аннотация @Valid требует выполнить проверку отправленного объекта Taco после его привязки к данным
+     * в отправленной форме, но до начала выполнения тела метода processTaco(). Если обнаружатся
+     * какие-либо ошибки, то сведения о них будут зафиксированы в объекте Errors, который передается в processTaco().
+     * <p>
+     * Первые несколько строк в processTaco() проверяют наличие ошибок, вызывая метод hasErrors() объекта Errors.
+     * Если ошибки есть, то метод processTaco() завершает работу без обработки Taco
+     * и возвращает имя представления "design", чтобы повторно отобразить форму.
+     * @param taco
+     * @param tacoOrder
+     * @return
+     */
+    @PostMapping
+    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+        if (errors.hasErrors()) {
+            return "design";
+        }
+        tacoOrder.addTaco(taco);
+        log.info("Processing taco: {}", taco);
+        return "redirect:/orders/current";
     }
     private Iterable<Ingredient> filterByType(
             List<Ingredient> ingredients, Type type) {

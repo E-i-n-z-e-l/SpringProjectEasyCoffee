@@ -10,4 +10,8 @@ public class SpringProject03Application implements WebMvcConfigurer {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringProject03Application.class, args);
 	}
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/").setViewName("home");
+	}
 }

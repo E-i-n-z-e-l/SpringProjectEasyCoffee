@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс реализует интерфейс Converter и отвечает за преобразование строковых идентификаторов в объекты типа Ingredient.
+ */
 @Component
 public class IngredientByIdConverter  implements Converter<String, Ingredient> {
     private Map<String, Ingredient> ingredientMap = new HashMap<>();
@@ -33,6 +36,13 @@ public class IngredientByIdConverter  implements Converter<String, Ingredient> {
         ingredientMap.put("SRCR",
                 new Ingredient("SRCR", "Sour Cream", Type.SAUCE));
     }
+
+    /**
+     * Метод принимает строковый идентификатор (id) и возвращает соответствующий объект Ingredient,
+     * получая его из ingredientMap.
+     * @param id
+     * @return
+     */
     @Override
     public Ingredient convert(String id) {
         return ingredientMap.get(id);

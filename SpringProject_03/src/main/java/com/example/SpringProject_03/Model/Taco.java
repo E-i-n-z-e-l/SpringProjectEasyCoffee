@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class Taco {
     @NotNull
+    // Аннотация указывает, что название должно содержать минимум 5 символов. Если это условие не выполняется,
+    // будет возвращено соответствующее сообщение об ошибке.
     @Size(min=5, message="Name must be at least 5 characters long")
     private String name;
     @NotNull

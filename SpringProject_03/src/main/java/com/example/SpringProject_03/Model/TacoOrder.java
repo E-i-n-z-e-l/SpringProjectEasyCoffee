@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 public class TacoOrder {
 
-    @NotBlank(message="Delivery name is required")
+    @NotBlank(message="Delivery name is required") // Аннотация @NotBlank означает что переменная не может быть пустой;
     private String deliveryName;
 
     @NotBlank(message="Street is required")
@@ -30,18 +30,23 @@ public class TacoOrder {
     @NotBlank(message="Zip code is required")
     private String deliveryZip;
 
-    @CreditCardNumber(message="Not a valid credit card number")
+    @CreditCardNumber(message="Not a valid credit card number") // Аннотация проверки номера карты;
     private String ccNumber;
 
-    @Pattern(regexp="^(0[1-9]|1[0-2])([\\/])([2-9][0-9])$",
-            message="Must be formatted MM/YY")
+    @Pattern(regexp="^(0[1-9]|1[0-2])([\\/])([2-9][0-9])$", // Поле для даты истечения срока действия кредитной карты,
+            message="Must be formatted MM/YY")              // помеченное аннотацией @Pattern, которая требует определённого формата (MM/YY);
     private String ccExpiration;
 
-    @Digits(integer=3, fraction=0, message="Invalid CVV")
+    @Digits(integer=3, fraction=0, message="Invalid CVV") // Аннотация проверки, что значение состоит из трех цифр;
     private String ccCVV;
 
     private List<Taco> tacos = new ArrayList<>();
 
+    /**
+     * Этот метод добавляет объект Taco в список tacos. Это позволяет динамически формировать заказ,
+     * добавляя тако по мере необходимости.
+     * @param taco
+     */
     public void addTaco(Taco taco) {
         this.tacos.add(taco);
     }
